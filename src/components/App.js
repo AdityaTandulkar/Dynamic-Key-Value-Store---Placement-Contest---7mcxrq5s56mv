@@ -1,77 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Link } from 'react-router-dom';
+import KeyValueStore from './KeyValueStore';
 import '../styles/App.css';
 
-
-const KeyValueStore = () => {
-  
-  const [keyValues, setKeyValues] = useState({});
-
-  
-  const updateKeyValue = (key, value) => {
-    setKeyValues(prevState => {
-      return { ...prevState, [key]: value };
-    });
-  };
-
-  
-  const handleUpdateClick = () => {
-   
-    const queryParams = Object.keys(keyValues)
-      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(keyValues[key])}`)
-      .join('&');
-
-  
-    window.history.replaceState(null, null, `?${queryParams}`);
-  };
-
- 
-  const handleDeleteClick = (key) => {
-    
-    setKeyValues(prevState => {
-      const newState = { ...prevState };
-      delete newState[key];
-      return newState;
-    });
-  };
-
-  
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const newKeyValues = {};
-
-    for (let [key, value] of queryParams.entries()) {
-      newKeyValues[decodeURIComponent(key)] = decodeURIComponent(value);
-    }
-
-    setKeyValues(newKeyValues);
-  }, []);
-
+function App() {
   return (
-    <div>
-      <h1>Key Value Store</h1>
-      <div>
-        {/* map the key-value pairs from the state */}
-        {Object.entries(keyValues).map(([key, value]) => (
-          <div key={key} className='key-value-div'>
-            <span className='key-field'>{key}:</span>
-            <input
-              className='value-field'
-              type="text"
-              value={value}
-              onChange={(e) => updateKeyValue(key, e.target.value)}
-            />
-            <button className='delete-btn' onClick={() => handleDeleteClick(key)}>Delete</button>
-          </div>
-        ))}
-
-        
-        <button className='update-btn' onClick={handleUpdateClick}>Update Values</button>
+    <Router>
+      <div id="main">
+        <nav>
+          <button onClick={() => window.history.replaceState(null, null, '/')}>Reset</button>
+          
+        </nav>
+        <KeyValueStore />
       </div>
-
-      
-      {Object.keys(keyValues).length === 0 && <p>No key values found in URL.</p>}
-    </div>
+    </Router>
   );
-};
+}
 
-export default KeyValueStore;
+
+export default App;
